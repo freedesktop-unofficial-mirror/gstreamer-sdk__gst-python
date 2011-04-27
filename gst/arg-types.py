@@ -44,10 +44,17 @@ class XmlNodeArg(ArgType):
 			'    %(name)s = PyCObject_AsVoidPtr(o);\n')
 	parmp = ('    Py_DECREF(o); Py_DECREF(xobj);Py_DECREF(xml);\n')
 
-	ret =  ('    if(xml == NULL) return NULL;\n')
+	ret =  ('#if defined __CYGWIN__ || defined G_OS_WIN32\n'
+		'    return NULL;\n'
+		'#else\n'
+		'    if(xml == NULL) return NULL;\n'
+		'#endif\n')
 	retp = ('    xargs = PyTuple_New(1);\n'
 			'    xobj = PyObject_GetAttrString(xml, "%(xobj)s");\n'
+			'#if defined __CYGWIN__ || defined G_OS_WIN32\n'
+			'#else\n'
 			'    o = %(xwrap)s(ret);\n'
+			'#endif\n'
 			'    PyTuple_SetItem(xargs, 0, o);\n'
 			'    return PyInstance_New(xobj, xargs, PyDict_New());\n')
 
