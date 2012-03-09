@@ -1,7 +1,7 @@
 SUBDIRS = common codegen gst examples plugin testsuite pkgconfig
 
 common_cflags = $(PYTHON_INCLUDES) $(PYGOBJECT_CFLAGS) $(GST_CFLAGS) $(GST_OPTION_CFLAGS) -fno-strict-aliasing
-common_libadd = $(GST_LIBS) $(GST_OPTION_LIBS)
+common_libadd = $(GST_LIBS) $(GST_OPTION_LIBS) $(PYTHON_LIBS)
 common_ldflags = -module -avoid-version
 
 # include before EXTRA_DIST for win32 assignment
@@ -13,6 +13,10 @@ pyexec_LTLIBRARIES =
 
 if HAVE_PYGOBJECT_2_16
 pyexec_LTLIBRARIES += gstoption.la
+endif
+
+if PLATFORM_WIN32
+common_ldflags += -no-undefined
 endif
 
 # GStreamer option bindings

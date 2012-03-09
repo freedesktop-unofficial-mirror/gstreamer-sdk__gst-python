@@ -83,7 +83,42 @@ then
 else
   AC_MSG_ERROR(too old)
 fi
-AM_CHECK_PYTHON_HEADERS(,[AC_MSG_ERROR(could not find Python headers)])
+
+AC_MSG_CHECKING([for some Win32 platform])
+case "$host" in
+  *-*-mingw*|*-*-cygwin*)
+    platform_win32=yes
+    ;;
+  *)
+    platform_win32=no
+    ;;
+esac
+AC_MSG_RESULT([$platform_win32])
+AM_CONDITIONAL(PLATFORM_WIN32, test "$platform_win32" = "yes")
+
+if test "x$cross_compiling" = "xyes" -a "x$platform_win32" = "xyes" ; then
+  # skip python cheks if cross-compiling to windows
+  # $PYTHON_INCLUDES and PYTHON_LIBS should be set properly
+  save_CPPFLAGS="$CPPFLAGS"
+  CPPFLAGS="$CPPFLAGS $PYTHON_INCLUDES"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+  /* end confdefs.h.  */
+  #include <Python.h>
+_ACEOF
+  if ac_fn_c_try_cpp "$LINENO"; then :
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: found" >&5
+      $as_echo "found" >&6; }
+
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: not found" >&5
+      $as_echo "not found" >&6; }
+    as_fn_error $? "could not find Python headers" "$LINENO" 5
+   fi
+   rm -f conftest.err conftest.i conftest.$ac_ext
+   CPPFLAGS="$save_CPPFLAGS"
+else
+  AM_CHECK_PYTHON_HEADERS(,[AC_MSG_ERROR(could not find Python headers)])
+fi
 
 dnl check for GStreamer
 GST_MAJORMINOR=0.10
@@ -419,7 +454,12 @@ AG_GST_VALGRIND_CHECK
 
 dnl Stuff needed for the python plugin loader
 
-AM_CHECK_PYTHON_LIBS(,[AC_MSG_ERROR(could not find Python lib)])
+if test "$cross_compiling" = "yes" -a "$platform_win32" = "yes" ; then
+  AC_MSG_RESULT(cross-compiling to windows, assuming PYTHON_LIBS are set properly)
+  AC_SUBST(PYTHON_LIBS)
+else
+  AM_CHECK_PYTHON_LIBS(,[AC_MSG_ERROR(could not find Python lib)])
+fi
 
 AG_GST_SET_PLUGINDIR
 

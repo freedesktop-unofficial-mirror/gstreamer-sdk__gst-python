@@ -7,8 +7,13 @@ INCLUDES = \
 noinst_LTLIBRARIES = testhelper.la
 linked_LIBS = testhelper.la
 
-testhelper_la_LDFLAGS = -module -avoid-version
-testhelper_la_LIBADD = $(GST_LIBS)
+common_ldflags = -module -avoid-version
+if PLATFORM_WIN32
+common_ldflags += -no-undefined
+endif
+
+testhelper_la_LDFLAGS = $(common_ldflags)
+testhelper_la_LIBADD = $(GST_LIBS) $(PYTHON_LIBS)
 testhelper_la_CFLAGS = $(PYGOBJECT_CFLAGS)
 testhelper_la_SOURCES = \
 	testhelpermodule.c \

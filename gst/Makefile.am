@@ -1,6 +1,10 @@
 common_cflags = $(PYGOBJECT_CFLAGS) $(GST_CFLAGS) $(GST_OPTION_CFLAGS) -fno-strict-aliasing
-common_libadd = $(GST_LIBS) $(GST_OPTION_LIBS)
+common_libadd = $(GST_LIBS) $(GST_OPTION_LIBS) $(PYTHON_LIBS)
 common_ldflags = -module -avoid-version
+
+if PLATFORM_WIN32
+common_ldflags += -no-undefined
+endif
 
 pkgpyexecdir = $(pyexecdir)/gst-$(GST_MAJORMINOR)/gst
 
