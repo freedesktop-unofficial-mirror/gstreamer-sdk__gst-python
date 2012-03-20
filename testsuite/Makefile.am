@@ -8,7 +8,7 @@ noinst_LTLIBRARIES = testhelper.la
 linked_LIBS = testhelper.la
 
 testhelper_la_LDFLAGS = -module -avoid-version
-testhelper_la_LIBADD = $(GLIB_LIBS)
+testhelper_la_LIBADD = $(GST_LIBS)
 testhelper_la_CFLAGS = $(PYGOBJECT_CFLAGS)
 testhelper_la_SOURCES = \
 	testhelpermodule.c \
